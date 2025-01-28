@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct myTodoListApp: App {
+    
+    @StateObject var listViewModel: myListViewModel = myListViewModel()     //Добавляем переменную для того что бы ViewModel распростронялась на все страницы
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                myTodoContent()
+            }
+            .environmentObject(listViewModel)     //Теперь все модели имеют доступ к ViewModel
         }
     }
 }

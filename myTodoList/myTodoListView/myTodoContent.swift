@@ -9,21 +9,30 @@ import SwiftUI
 
 struct myTodoContent: View {
     
-    @State var todoItems: [String] = [
-        "Buy milk",
-        "Clean room",
-        "Learn SwiftUI",
-        "Go for a walk",
-    ]
+    @EnvironmentObject var listViewModel: myListViewModel       //Добавляем эту переменную для связывания с моделью. И теперь мы будем брать все данные из модели.
+    
+   //Вся логика находиться на отдельной странице myListViewModel()
     
     var body: some View {
-            List {
-                ForEach(todoItems, id: \.self) { item in
-                    myTodoDetail()
+        ZStack{
+            if listViewModel.todoItems.isEmpty {
+                myNoItemView()
+                    .transition(.opacity.animation(.easeIn))
+            } else {
+                List {
+                    ForEach(listViewModel.todoItems) { item in
+                        myTodoDetail(titel: item)
+                            .onTapGesture {
+                                withAnimation(.bouncy) {
+                                    listViewModel.chenge(chengeItem: item)
+                                }
+                            }
+                    }
+                    .onDelete(perform: listViewModel.deleteItems)
+                    .onMove(perform: listViewModel.moveItems)
                 }
-                .onDelete(perform: deleteItems)
-                .onMove(perform: moveItems)
             }
+        } 
         .navigationTitle(Text("My Todo List"))
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -31,19 +40,13 @@ struct myTodoContent: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink("Add") {
-                    Text("Detail")
+                    myAddView()
                 }
             }
         }
     }
     
-    func deleteItems(at offsets: IndexSet) {
-        todoItems.remove(atOffsets: offsets)
-    }
     
-    func moveItems(from: IndexSet, to: Int) {
-        todoItems.move(fromOffsets: from, toOffset: to)
-    }
     
 }
 
@@ -51,6 +54,7 @@ struct myTodoContent: View {
     NavigationStack{
         myTodoContent()
     }
+    .environmentObject(myListViewModel())       //Без этой строчки приложение крашнется
 }
 
 

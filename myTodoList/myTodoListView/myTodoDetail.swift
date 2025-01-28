@@ -8,10 +8,18 @@
 import SwiftUI
 
 struct myTodoDetail: View {
+    
+    @State var titel: myTodoModel
+    
     var body: some View {
         HStack{
-            Image(systemName: "checkmark.circle")
-            Text("This if my first text")
+            Image(systemName: titel.isDone ? "checkmark.circle" : "circle" )
+//                .onTapGesture {
+//                    withAnimation(.bouncy) {
+//                        titel.isDone.toggle()
+//                    }
+//                }
+            Text(titel.text)
             Spacer()
         }
     }
@@ -19,8 +27,13 @@ struct myTodoDetail: View {
 
 #Preview {
     
+    let item1 = myTodoModel(text: "one", isDone: true)
+    let item2 = myTodoModel(text: "two", isDone: false)
     
     NavigationStack{
-        myTodoDetail()
+        Group{
+            myTodoDetail(titel: item1)
+            myTodoDetail(titel: item2)
+        }
     }
 }
